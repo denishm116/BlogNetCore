@@ -52,9 +52,5 @@ namespace BlogNetCore.Controllers.Admin
             _category.Delete(id);
         }
 
-        //private bool CategoryExists(int id)
-        //{
-        //    return _context.Categories.Any(e => e.Id == id);
-        //}
     }
 }

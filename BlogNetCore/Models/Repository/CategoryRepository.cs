@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace BlogNetCore.Models.Implementation
+namespace BlogNetCore.Models.Repository
 {
     public class CategoryRepository : ICategory
     {

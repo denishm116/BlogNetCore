@@ -2,7 +2,7 @@
 using System.Net;
 using System.Runtime.Serialization;
 
-namespace BlogNetCore.Models.Implementation
+namespace BlogNetCore.Models.Repository
 {
     [Serializable]
     internal class HttpResponseException : Exception
