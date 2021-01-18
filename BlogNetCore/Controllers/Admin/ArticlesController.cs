@@ -1,5 +1,6 @@
 ﻿using BlogNetCore.Models;
 using BlogNetCore.Models.Interfaces;
+using BlogNetCore.Models.Repository.UseCases;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -31,10 +32,10 @@ namespace BlogNetCore.Controllers.Admin
 
         // POST api/<ArticlesController>
         [HttpPost]
-        public Article PostArticle(Article article)
+        public void PostArticle(Dictionary<string, object> data)
         {
-
-            return _article.Post(article);
+        
+                _article.Post(data);
         }
 
         // PUT api/<ArticlesController>/5

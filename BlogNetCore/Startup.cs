@@ -28,10 +28,13 @@ namespace BlogNetCore
             string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<BlogDbContext>(options =>
                 options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 19))));
+
             services.AddControllers();
             
             services.AddCors();
-            services.AddTransient<ICategory, CategoryRepository>();
+
+            services.AddScoped<ICategory, CategoryRepository>();
+            services.AddScoped<IArticle, ArticleRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

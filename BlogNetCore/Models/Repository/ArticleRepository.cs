@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
+
+using BlogNetCore.Models.Repository.UseCases;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlogNetCore.Models.Repository
 {
@@ -23,12 +27,34 @@ namespace BlogNetCore.Models.Repository
             return (Article)db.Articles.Include(a => a.Categories).Where(a => a.Id == id);
         }
 
-        public Article Post(Article article)
+        public void Post(Dictionary<string, object> data)
         {
-            db.Articles.Add(article);
-            db.SaveChanges();
+            var dstr = data["Article"];
+            var title = dstr.ToString();
+            //Article article = (Article)data["Article"];
 
-            return article;
+
+
+            //string json = JsonSerializer.Serialize<Article>(dstr);
+            //var article = JsonSerializer.Deserialize<Article>(dstr);
+
+
+
+            //foreach (var a in article)
+            //{
+
+            //}
+
+            db.Articles.ToList();
+
+            //foreach (Category category in categories.ToList())
+            //{
+            //    article.Categories.Add(category);
+            //}
+
+            //db.SaveChanges();
+            //return article;
+
         }
 
         public Article Put(int id, Article article)
