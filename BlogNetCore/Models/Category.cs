@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BlogNetCore.Models
 {
@@ -16,7 +13,7 @@ namespace BlogNetCore.Models
         public string Description { get; set; }
         
         public Category Parent { get; set; }
-
+        [JsonIgnore]
         public List<Article> Articles { get; set; } = new List<Article>();
     }
 }

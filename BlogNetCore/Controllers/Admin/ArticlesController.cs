@@ -32,10 +32,10 @@ namespace BlogNetCore.Controllers.Admin
 
         // POST api/<ArticlesController>
         [HttpPost]
-        public void PostArticle(Dictionary<string, object> data)
+        public Article PostArticle(Dictionary<string, object> data)
         {
         
-                _article.Post(data);
+               return _article.Post(data);
         }
 
         // PUT api/<ArticlesController>/5

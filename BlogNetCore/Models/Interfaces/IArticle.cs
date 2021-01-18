@@ -8,7 +8,7 @@ namespace BlogNetCore.Models.Interfaces
         public IEnumerable<Article> All();
         public Article GetOne(int id);
         public Article Put(int id, Article article);
-        public void Post(Dictionary<string, object> data);
+        public Article Post(Dictionary<string, object> data);
         public void Delete(int id);
     }
 }

@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Newtonsoft.Json;
 using System.Text.Json;
-
-using BlogNetCore.Models.Repository.UseCases;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BlogNetCore.Models.Repository
 {
@@ -19,7 +17,8 @@ namespace BlogNetCore.Models.Repository
         }
         public IEnumerable<Article> All()
         {
-            return db.Articles.Include(a=>a.Categories).ToList();
+            List<Article> articles = db.Articles.Include(a=>a.Categories).ToList();
+            return articles;
         }
 
         public Article GetOne(int id)
@@ -27,33 +26,34 @@ namespace BlogNetCore.Models.Repository
             return (Article)db.Articles.Include(a => a.Categories).Where(a => a.Id == id);
         }
 
-        public void Post(Dictionary<string, object> data)
+        public Article Post(Dictionary<string, object> data)
         {
-            var dstr = data["Article"];
-            var title = dstr.ToString();
-            //Article article = (Article)data["Article"];
+            var options = new JsonSerializerOptions()
+            {
+                MaxDepth = 0,
+                IgnoreNullValues = true,
+                IgnoreReadOnlyProperties = true
+            };
+            var serializedArticle = @data["Article"].ToString().Replace("\"", "\'");
+            Article article = JsonConvert.DeserializeObject<Article>(serializedArticle);
+
+            var serilizaedCategories = @data["Categories"].ToString().Replace("\"", "\'");
+            var serilizaedCategoriesTrimmed = serilizaedCategories.Substring(1, serilizaedCategories.Length - 2);
+            List<Category> categories = JsonConvert.DeserializeObject<List<Category>>(serilizaedCategoriesTrimmed);
 
 
 
-            //string json = JsonSerializer.Serialize<Article>(dstr);
-            //var article = JsonSerializer.Deserialize<Article>(dstr);
+            db.Articles.Add(article);
+
+            foreach(Category cat in categories)
+            {
+                article.Categories.Add(cat);
+            }
+
+            db.SaveChanges();
 
 
-
-            //foreach (var a in article)
-            //{
-
-            //}
-
-            db.Articles.ToList();
-
-            //foreach (Category category in categories.ToList())
-            //{
-            //    article.Categories.Add(category);
-            //}
-
-            //db.SaveChanges();
-            //return article;
+            return article;
 
         }
 
