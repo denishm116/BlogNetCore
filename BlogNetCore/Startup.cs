@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using BlogNetCore.Models.Interfaces;
-using BlogNetCore.Models.Repository;
-
-
-
+using BlogNetCore.Services;
+using System.Text.Json;
+using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 namespace BlogNetCore
 {
     public class Startup
@@ -29,12 +29,13 @@ namespace BlogNetCore
             services.AddDbContext<BlogDbContext>(options =>
                 options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 19))));
 
+            //services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceLoopHandling.Ignore);
             services.AddControllers();
             
             services.AddCors();
 
-            services.AddScoped<ICategory, CategoryRepository>();
-            services.AddScoped<IArticle, ArticleRepository>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IArticleService, ArticleService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

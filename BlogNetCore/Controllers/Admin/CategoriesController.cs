@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using BlogNetCore.Models;
 using BlogNetCore.Models.Interfaces;
+using BlogNetCore.Models.DataContracts;
+using BlogNetCore.Models.DataContracts.CategoriesContracts;
+using System;
+using BlogNetCore.Extensions;
 
 namespace BlogNetCore.Controllers.Admin
 {
@@ -9,48 +13,84 @@ namespace BlogNetCore.Controllers.Admin
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ICategory _category;
+        private readonly ICategoryService _service;
 
-        public CategoriesController(ICategory category)
+        public CategoriesController(ICategoryService service)
         {
-            _category = category;
+            _service = service;
         }
 
         // GET: api/Categories
         [HttpGet]
-        public IEnumerable<Category> GetCategories()
+        public IEnumerable<CategoryDto> GetCategories()
         {
-            return _category.All();
-        }
+            List<CategoryDto> contracts = new List<CategoryDto>();
+            List<Category> categories = (List<Category>)_service.GetCategories();
+
+            foreach (Category category in categories)
+            {
+                CategoryDto categoryDto = category.ConvertCategoryToCategoryDto();
+                
+                contracts.Add(categoryDto);
+            }
+            return contracts;
+          }
 
         //GET: api/Categories/5
         [HttpGet("{id}")]
-        public ActionResult<Category> GetCategory(int id)
+        public ActionResult<CategoryDto> GetCategory(int id)
         {
-           return _category.GetOne(id);
-        }
+            if(IsCategoryExists(id))
+            {
+                throw new Exception("Category not Found");
+            }
+            Category category = _service.GetCategory(id);
 
-        // PUT: api/Categories/5
-        [HttpPut("{id}")]
-        public Category PutCategory(int id, Category category)
-        {
-            return _category.Put(id, category);
+            return category.ConvertCategoryToCategoryDto();
+
         }
 
         // POST: api/Categories
         [HttpPost]
-        public Category PostCategory(Category category)
+        public CategoryDto PostCategory(CreateCategoryDto categoriesContract)
         {
-            
-            return _category.Post(category);
+            Category newCategory = new Category
+            {
+                Title = categoriesContract.Title,
+                Description = categoriesContract.Description,
+                ParentId = categoriesContract.ParentId
+            };
+
+            Category category =  _service.CreateCategory(newCategory);
+            return category.ConvertCategoryToCategoryDto();
+        }
+
+        // PUT: api/Categories/5
+        [HttpPut("{id}")]
+        public CategoryDto PutCategory(int id, UpdateCategoryDto categoriesContract)
+        {
+            if (!IsCategoryExists(id))
+            {
+                throw new Exception("Category not found");
+            }
+
+            Category category = _service.UpdateCategory(categoriesContract);
+            return category.ConvertCategoryToCategoryDto();
         }
 
         // DELETE: api/Categories/5
         [HttpDelete("{id}")]
         public void DeleteCategory(int id)
         {
-            _category.Delete(id);
+            if (!IsCategoryExists(id))
+            {
+                throw new Exception("Catregory not found"); ;
+            }
+            _service.DeleteCategory(id);
         }
-
+        private bool IsCategoryExists(int id)
+        {
+            return _service.IsCategoryExists(id);
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace BlogNetCore.Models
         public string Description { get; set; }
         
         public Category Parent { get; set; }
-        [JsonIgnore]
+        //[JsonIgnore]
         public List<Article> Articles { get; set; } = new List<Article>();
     }
 }

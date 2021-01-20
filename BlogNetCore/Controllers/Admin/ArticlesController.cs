@@ -1,7 +1,12 @@
 ﻿using BlogNetCore.Models;
+using BlogNetCore.Extensions;
+using BlogNetCore.Models.DataContracts;
+using BlogNetCore.Models.DataContracts.ArticleContracts;
+using BlogNetCore.Models.DataContracts.CategoriesContracts;
 using BlogNetCore.Models.Interfaces;
-using BlogNetCore.Models.Repository.UseCases;
+using BlogNetCore.Services;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 namespace BlogNetCore.Controllers.Admin
@@ -10,46 +15,83 @@ namespace BlogNetCore.Controllers.Admin
     [ApiController]
     public class ArticlesController : ControllerBase
     {
-        private readonly IArticle _article;
-        public ArticlesController(IArticle article)
+        
+        private readonly ArticleService _service;
+        
+        public ArticlesController(IArticleService service)
         {
-            _article = article;
+            _service = (ArticleService)service;
         }
 
         // GET: api/<ArticlesController>
         [HttpGet]
-        public IEnumerable<Article> GetArticles()
+        public IEnumerable<ArticleDto> GetArticles()
         {
-            return _article.All();
+            List<ArticleDto> contracts = new List<ArticleDto>();
+            List<Article> articles = (List<Article>)_service.GetArticles();
+            foreach (Article article in articles)
+            {
+                ArticleDto a = article.ConvertArticleToArticleDto();
+                contracts.Add(a);
+            }
+            return contracts;  
         }
 
         // GET api/<ArticlesController>/5
         [HttpGet("{id}")]
-        public ActionResult<Article> GetArticle(int id)
+        public ActionResult<ArticleDto> GetArticle(int id)
         {
-            return _article.GetOne(id);
+            if (!IsArticleExists(id))
+            {
+                throw new Exception("Article not found"); 
+            }
+
+            Article article = _service.GetArticle(id);
+            return article.ConvertArticleToArticleDto();
         }
 
         // POST api/<ArticlesController>
         [HttpPost]
-        public Article PostArticle(Dictionary<string, object> data)
+        public ArticleDto PostArticle(CreateArticleDto createArticleDto)
         {
-        
-               return _article.Post(data);
+            Article art = new Article
+            {
+                Title = createArticleDto.Title,
+                Description = createArticleDto.Description
+            };
+            List<int> categoriesId = createArticleDto.Categories;
+            Article article = _service.CreateArticle(art, categoriesId);
+            return article.ConvertArticleToArticleDto();
         }
 
         // PUT api/<ArticlesController>/5
         [HttpPut("{id}")]
-        public Article PutArticle(int id, Article article)
+        public ArticleDto PutArticle(int id, UpdateArticleDto articleContract)
         {
-            return _article.Put(id, article);
+            if (id != articleContract.Id)
+            {
+                throw new Exception("Article not found");
+            }
+            Article article = _service.UpdateArticle(articleContract);
+            return article.ConvertArticleToArticleDto();
         }
 
         // DELETE api/<ArticlesController>/5
         [HttpDelete("{id}")]
         public void DeleteArticle(int id)
         {
-            _article.Delete(id);
+            if(!IsArticleExists(id))
+            {
+                throw new Exception("Article not found");
+            }
+
+            _service.DeleteArticle(id);
         }
+
+        private bool IsArticleExists(int id)
+        {
+            return _service.IsArticleExists(id);
+        }
+
     }
 }
