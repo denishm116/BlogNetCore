@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace BlogNetCore.Controllers.Admin
 {
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
     public class ArticlesController : ControllerBase
     {

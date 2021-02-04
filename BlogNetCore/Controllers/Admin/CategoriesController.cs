@@ -2,15 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using BlogNetCore.Models;
 using BlogNetCore.Models.Interfaces;
-using BlogNetCore.Models.DataContracts;
 using BlogNetCore.Models.DataContracts.CategoriesContracts;
 using System;
 using BlogNetCore.Extensions;
 
 namespace BlogNetCore.Controllers.Admin
 {
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
+
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _service;
